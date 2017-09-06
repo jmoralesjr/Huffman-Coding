@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class Huffman {
 	char[] symbols;
@@ -28,6 +29,9 @@ public class Huffman {
 			return;
 		}
 		
+		leaves = new ArrayBlockingQueue<BinaryTree<Float>>(10);
+		trees = new ArrayBlockingQueue<BinaryTree<Float>>(10);
+		
 		buildLeaves();
 		
 		BinaryTree<Float> leaf1 = leaves.remove();
@@ -43,13 +47,34 @@ public class Huffman {
 		
 	}
 	
-	public String decode(char code){
-		return null;
+	public String decode(String code){
+		StringBuffer buffer = new StringBuffer();
+		int i = 0;
 		
+		while(i < code.length()){
+			BinaryTree<Float> node = huffman;
+			while(node.left != null || node.right != null){
+				if(code.charAt(i++) == '0'){
+					node = node.left;
+				}else{
+					node = node.right;
+				}
+			}
+			float index = node.getData();
+			buffer.append(symbols[(int)index]);
+		}
+		return buffer.toString();
 	}
 
 	public String getCode(char symbol){
-		return null;
+		int i;
+		for(i = 0; i < symbols.length; i++){
+			if(symbols[i] == symbol){
+				break;
+			}
+		}
+		
+		return codes[i];
 	}
 	
 	
@@ -191,5 +216,14 @@ public class Huffman {
 		}
 		
 		return tree.getData();
+	}
+	
+	public static void main(String[] args) throws Exception{
+		char[] symbols = {'e', 't', 'i', 'm', 'y', 'b'};
+		float[] probs = {.1f, .1f, .1f, .2f, .2f, .3f};
+		
+		Huffman huffman = new Huffman(symbols, probs);
+		
+		System.out.println(huffman.getCode('m'));
 	}
 }
